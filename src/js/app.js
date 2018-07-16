@@ -1,27 +1,26 @@
 import Thing from './thing';
-let svg = document.getElementById('svg');
-let paths = svg.querySelectorAll('path');
-let coords = [];
-for (var z=0; z<paths.length;z++) {
-  let path = paths[z].outerHTML.split('');
-  let pathDel = path.splice(path.indexOf('M')+1);
-  let coord = pathDel.splice(0, pathDel.indexOf(' ')).join('').split(',');
-  coords.push(coord);
-}
 
+// let svg = document.getElementById('svg');
+
+
+
+let images = [...document.querySelectorAll('.js-canvas')];
 
 class Cloud {
-  constructor() {
+  constructor(selector) {
     // create canvas
+    this.container = selector;
+    this.svg = selector.querySelector('svg');
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
-    this.width = 500;
-    this.height = 500;
+    this.paths = this.svg.querySelectorAll('circle');
+    this.width = 200;
+    this.height = 200;
     this.canvas.width = this.width;
     this.canvas.height = this.height;
-    document.body.appendChild(this.canvas);
+    this.container.appendChild(this.canvas);
     this.time = 0;
-    this.dotsArray = coords;
+    this.dotsArray = [];
     this.ctx.strokeStyle = 'rgba(2,255,255,1)';
     this.particles = [];
     this.mouseX = 0;
@@ -33,9 +32,20 @@ class Cloud {
 
   createparticles() {
     let self = this;
-    for (var i = 0; i < this.dotsArray.length; i++) {
-      let x = +this.dotsArray[i][0]+100;
-      let y = +this.dotsArray[i][1]+100;
+    for (let z=0; z<self.paths.length;z++) {
+      let path = self.paths[z].outerHTML.split(' ');
+      let cx = path[2].split('');
+      let cy = path[3].split('');
+      cx.splice(-1, 1);
+      cx.splice(0, 4);
+      cy.splice(-1, 1);
+      cy.splice(0, 4);
+      let coord = [cx.join('')*2, cy.join('')*2];
+      self.dotsArray.push(coord);
+    }
+    for (let i = 0; i < this.dotsArray.length; i++) {
+      let x = +this.dotsArray[i][0];
+      let y = +this.dotsArray[i][1];
       this.particles.push(
         new Thing(self.ctx,x,y)
       );
@@ -64,4 +74,8 @@ class Cloud {
   }
 };
 
-let cloud = new Cloud();
+// let cloud = new Cloud();
+
+for(let x = 0; x < images.length; x++) {
+  new Cloud(images[x]);
+}
