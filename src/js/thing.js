@@ -14,13 +14,15 @@ function limit(t, e, n) {
 }
 
 export default class Thing {
-  constructor(ctx,x,y) {
+  constructor(ctx,x,y, dotSize, color) {
+    this.color = color;
+    this.dotSize = dotSize;
     this.ctx = ctx;
     this.pos = vec2.fromValues(x,y);
     this.original = vec2.fromValues(x,y);
     this.vel = vec2.fromValues(Math.random()*2-1,Math.random()*2-1);
-    this.acc = vec2.fromValues(0,0);
-    this.maxForce = 0.05;
+    this.acc = vec2.fromValues(Math.random()*3,Math.random()*3);
+    this.maxForce = 0.1*Math.random() + 0.05;
     this.maxSpeed = 5;
   }
 
@@ -42,7 +44,7 @@ export default class Thing {
     let dist = vec2.create();
     let mouse = vec2.fromValues(x,y);
     vec2.subtract(dist,mouse,this.pos);
-    if(vec2.length(dist)<30) {
+    if(vec2.length(dist)<25) {
       setmag(dist,dist,this.maxSpeed);
       dist = vec2.scale(dist,dist,-1);
       let runawayforce = vec2.create();
@@ -76,9 +78,10 @@ export default class Thing {
 
   draw() {
     this.ctx.beginPath();
-    this.ctx.arc(this.pos[0],this.pos[1], 2, 0, 2 * Math.PI);
+    this.ctx.arc(this.pos[0],this.pos[1], this.dotSize, 0, 2 * Math.PI);
+    this.ctx.strokeStyle = this.color;
     this.ctx.stroke();
-    this.ctx.fillStyle = 'rgba(2,255,255,1)';
+    this.ctx.fillStyle = this.color;
     this.ctx.fill();
     this.ctx.closePath();
 
